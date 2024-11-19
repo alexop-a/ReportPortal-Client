@@ -3,10 +3,30 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>reportportal-client</artifactId>
+	<artifactId>reportportal-rest-client</artifactId>
 	<groupId>io.github.alexop-a</groupId>
 	<packaging>jar</packaging>
 	<version>1.0.1-SNAPSHOT</version>
+
+	<name>ReportPortal Rest Client</name>
+	<description>A simple rest client for ReportPortal</description>
+	<url>https://github.com/alexop-a/ReportPortal-Client</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Andreas Alexopoulos</name>
+			<email>alexop.a@gmail.com</email>
+			<organization>alexop-a</organization>
+			<organizationUrl>https://alexop-a.github.io/</organizationUrl>
+		</developer>
+	</developers>
 
 	<properties>
 		<build-helper-plugin.version>3.6.0</build-helper-plugin.version>
@@ -17,6 +37,9 @@
 		<lombok.version>1.18.34</lombok.version>
 		<httpclient5.version>5.3.1</httpclient5.version>
 		<commons-lang3.version>3.17.0</commons-lang3.version>
+
+		<gpg-plugin.version>3.2.2</gpg-plugin.version>
+		<central-publishing-maven-plugin.version>0.5.0</central-publishing-maven-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -90,5 +113,68 @@
 
 		</plugins>
 	</build>
+
+	<scm>
+		<url>https://github.com/alexop-a/ReportPortal-Client.git</url>
+		<connection>scm:git:https://github.com/alexop-a/ReportPortal-Client.git</connection>
+		<developerConnection>
+			scm:git:https://github.com/alexop-a/ReportPortal-Client.git</developerConnection>
+		<tag>v@{project.version}</tag>
+	</scm>
+
+	<profiles>
+		<profile>
+			<id>github-maven-artifactory</id>
+			<distributionManagement>
+				<repository>
+					<id>github</id>
+					<name>GitHub alexop-a Apache Maven Packages</name>
+					<url>
+						https://maven.pkg.github.com/alexop-a/Reportportal-Client</url>
+				</repository>
+
+			</distributionManagement>
+
+		</profile>
+
+		<profile>
+			<id>central-maven-artifactory</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${gpg-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<gpgArguments>
+								<argument>--pinentry-mode</argument>
+								<argument>loopback</argument>
+							</gpgArguments>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>${central-publishing-maven-plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central</publishingServerId>
+						</configuration>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
