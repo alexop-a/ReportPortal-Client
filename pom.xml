@@ -6,7 +6,7 @@
 	<artifactId>reportportal-rest-client</artifactId>
 	<groupId>io.github.alexop-a</groupId>
 	<packaging>jar</packaging>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<name>ReportPortal Rest Client</name>
 	<description>A simple rest client for ReportPortal</description>
@@ -103,6 +103,21 @@
 				<executions>
 					<execution>
 						<id>attach-sources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.verion}</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
