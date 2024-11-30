@@ -192,7 +192,11 @@ public class RPClient {
 	public FinishLaunchResponse finishLaunch(FinishLaunchProperties props) {
 		FinishLaunchRequest rq = new FinishLaunchRequest();
 		rq.setEndTime(props.getEndTime());
-
+		Optional.ofNullable(props.getStatus()).ifPresent(rq::setStatus);
+		Optional.ofNullable(props.getDescription()).ifPresent(rq::setDescription);
+		Optional.ofNullable(props.getAttributes())
+				.ifPresent(attr -> rq.setAttributes(AttributeParser.parseAsSet(attr)));
+		
 		ResponseEntity<FinishLaunchResponse> rs = client
 				.put()
 				.uri(finishLaunchUri.buildAndExpand(projectName, props.getLaunchUuid()).toUri())
@@ -257,7 +261,9 @@ public class RPClient {
 		rq.setEndTime(props.getEndTime());
 		rq.setLaunchUuid(props.getLaunchUuid());
 		rq.setStatus(props.getStatus());
-
+		Optional.ofNullable(props.getAttributes())
+				.ifPresent(attr -> rq.setAttributes(AttributeParser.parseAsSet(attr)));
+		
 		ResponseEntity<EntryCreatedResponse> rs = client
 				.put()
 				.uri(finishItemUri.buildAndExpand(projectName, props.getItemUuid()).toUri())

@@ -34,5 +34,5 @@ public class FinishTestItemProperties {
 	private String itemUuid;
 	private Date endTime;
 	private String status;
-
+	private String attributes;
 }

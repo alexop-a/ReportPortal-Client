@@ -33,4 +33,7 @@ public class FinishLaunchProperties {
 
 	private String launchUuid;
 	private Date endTime;
+	private String attributes;
+	private String status;
+	private String description;
 }
