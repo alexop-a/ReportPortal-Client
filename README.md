@@ -8,7 +8,7 @@ Add the following dependency in pom.xml file
 <dependency>
 	<artifactId>reportportal-rest-client</artifactId>
 	<groupId>io.github.alexop-a</groupId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 </dependency>
  ```
 ## Initialization
