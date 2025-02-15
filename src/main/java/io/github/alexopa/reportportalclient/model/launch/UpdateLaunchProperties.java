@@ -14,27 +14,22 @@
  * limitations under the License.
  *
  */
-
 package io.github.alexopa.reportportalclient.model.launch;
 
-import java.util.Date;
-
 import io.github.alexopa.reportportalclient.RPClient;
-import io.github.alexopa.reportportalclient.rpmodel.LaunchStatus;
+import io.github.alexopa.reportportalclient.rpmodel.Mode;
 import lombok.Builder;
 import lombok.Getter;
 
 /**
- * Class that models the properties sent to {@link RPClient} to finish
- * a launch
+ * Class that models the properties sent to {@link RPClient} to update a launch
  */
 @Builder
 @Getter
-public class FinishLaunchProperties {
+public class UpdateLaunchProperties {
 
-	private String launchUuid;
-	private Date endTime;
-	private String attributes;
-	private LaunchStatus status;
+	private int launchId;
 	private String description;
+	private String attributes;
+	private Mode mode;
 }
