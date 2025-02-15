@@ -54,6 +54,7 @@ import io.github.alexopa.reportportalclient.exception.ReportPortalClientExceptio
 import io.github.alexopa.reportportalclient.model.ReportPortalErrorMessage;
 import io.github.alexopa.reportportalclient.model.launch.FinishLaunchProperties;
 import io.github.alexopa.reportportalclient.model.launch.StartLaunchProperties;
+import io.github.alexopa.reportportalclient.model.launch.UpdateLaunchProperties;
 import io.github.alexopa.reportportalclient.model.log.AddFileAttachmentProperties;
 import io.github.alexopa.reportportalclient.model.log.AddLogProperties;
 import io.github.alexopa.reportportalclient.model.testitem.FinishTestItemProperties;
@@ -65,6 +66,8 @@ import io.github.alexopa.reportportalclient.rpmodel.FinishTestItemRequest;
 import io.github.alexopa.reportportalclient.rpmodel.StartLaunchRequest;
 import io.github.alexopa.reportportalclient.rpmodel.StartLaunchResponse;
 import io.github.alexopa.reportportalclient.rpmodel.StartTestItemRequest;
+import io.github.alexopa.reportportalclient.rpmodel.UpdateLaunchRequest;
+import io.github.alexopa.reportportalclient.rpmodel.UpdateLaunchResponse;
 import io.github.alexopa.reportportalclient.rpmodel.log.SaveLogRequest;
 import io.github.alexopa.reportportalclient.util.AttributeParser;
 import lombok.extern.slf4j.Slf4j;
@@ -83,9 +86,11 @@ public class RPClient {
 	private static final String API_PATH = "api/v1";
 	private static final String LAUNCH_PATH = "launch";
 	private static final String ITEM_PATH = "item";
+	private static final String LAUNCH_ID_PATH = "{launchId}";
 	private static final String LAUNCH_UUID_PATH = "{launchUuid}";
 	private static final String PARENT_UUID_PATH = "{parentUuid}";
 	private static final String ITEM_UUID_PATH = "{itemUuid}";
+	private static final String UPDATE_PATH = "update";
 	private static final String FINISH_PATH = "finish";
 	private static final String LOG_PATH = "log";
 	
@@ -95,6 +100,7 @@ public class RPClient {
 	private final String apiKey;
 
 	private final UriComponentsBuilder startLaunchUri;
+	private final UriComponentsBuilder updateLaunchUri;
 	private final UriComponentsBuilder finishLaunchUri;
 	private final UriComponentsBuilder startItemUri;
 	private final UriComponentsBuilder startNestedItemUri;
@@ -125,6 +131,8 @@ public class RPClient {
 		String endpoint = config.getEndpoint();
 		startLaunchUri = UriComponentsBuilder.fromHttpUrl(endpoint).pathSegment(API_PATH, PROJECT_NAME_PATH,
 				LAUNCH_PATH);
+		updateLaunchUri = UriComponentsBuilder.fromHttpUrl(endpoint).pathSegment(API_PATH, PROJECT_NAME_PATH,
+				LAUNCH_PATH, LAUNCH_ID_PATH, UPDATE_PATH);	
 		finishLaunchUri = UriComponentsBuilder.fromHttpUrl(endpoint).pathSegment(API_PATH, PROJECT_NAME_PATH,
 				LAUNCH_PATH, LAUNCH_UUID_PATH, FINISH_PATH);
 		startItemUri = UriComponentsBuilder.fromHttpUrl(endpoint).pathSegment(API_PATH, PROJECT_NAME_PATH, ITEM_PATH);
@@ -181,6 +189,27 @@ public class RPClient {
 
 		return rs.getBody();
 	}
+	
+	public UpdateLaunchResponse updateLaunch(UpdateLaunchProperties props) {
+		UpdateLaunchRequest rq = new UpdateLaunchRequest();
+		Optional.ofNullable(props.getMode()).ifPresent(rq::setMode);
+		Optional.ofNullable(props.getDescription()).ifPresent(rq::setDescription);
+		Optional.ofNullable(props.getAttributes())
+				.ifPresent(attr -> rq.setAttributes(AttributeParser.parseAsSet(attr)));
+
+		ResponseEntity<UpdateLaunchResponse> rs = client
+				.put()
+				.uri(updateLaunchUri.buildAndExpand(projectName, props.getLaunchId()).toUri())
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.header(HEADER_AUTHORIZATION, BEARER_TOKEN + apiKey)
+				.body(rq)
+				.retrieve()
+				.toEntity(UpdateLaunchResponse.class);
+
+		return rs.getBody();	
+		
+	}
 
 	/**
 	 * Finishes a launch on ReportPortal
@@ -192,7 +221,7 @@ public class RPClient {
 	public FinishLaunchResponse finishLaunch(FinishLaunchProperties props) {
 		FinishLaunchRequest rq = new FinishLaunchRequest();
 		rq.setEndTime(props.getEndTime());
-		Optional.ofNullable(props.getStatus()).ifPresent(rq::setStatus);
+		Optional.ofNullable(props.getStatus()).ifPresent(s -> rq.setStatus(s.name()));
 		Optional.ofNullable(props.getDescription()).ifPresent(rq::setDescription);
 		Optional.ofNullable(props.getAttributes())
 				.ifPresent(attr -> rq.setAttributes(AttributeParser.parseAsSet(attr)));
